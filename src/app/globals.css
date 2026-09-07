@@ -1,0 +1,100 @@
+@import "tailwindcss";
+
+/*
+ * Design tokens.
+ *
+ * Two rules drive every colour here:
+ *   1. Body text and interactive labels hit WCAG AAA (7:1) against their
+ *      background, not merely AA. The audience includes people with low vision.
+ *   2. The focus ring is amber, not teal, so it never blends into a focused
+ *      brand-coloured button. It is 3px with a 2px offset -- visible across a
+ *      room, which matters when a certificate page is projected at an event.
+ */
+@theme {
+  --color-teal-50: #eff8f7;
+  --color-teal-100: #d6ecea;
+  --color-teal-200: #a8d7d3;
+  --color-teal-600: #148f8a;
+  --color-teal-700: #0f6f6b;
+  --color-teal-800: #0b4f4d;
+  --color-teal-900: #06302f;
+
+  --color-ink: #0d1b1a;
+  --color-ink-soft: #3f5250;
+  --color-paper: #ffffff;
+  --color-paper-sunk: #f4f8f7;
+  --color-line: #c6d5d3;
+
+  --color-focus: #a3480a;
+  --color-danger: #9b1c1c;
+  --color-danger-bg: #fdeaea;
+  --color-success: #14603a;
+  --color-success-bg: #e6f4ec;
+
+  --font-sans: var(--font-atkinson), ui-sans-serif, system-ui, sans-serif;
+}
+
+/*
+ * 18px base rather than 16px. Low-vision readers should not have to zoom to
+ * reach a comfortable size, and sighted readers lose nothing.
+ */
+html {
+  font-size: 18px;
+}
+
+body {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  line-height: 1.6;
+  /* Never disable zoom, and let text reflow to 400% without horizontal scroll. */
+  text-size-adjust: 100%;
+}
+
+/*
+ * One global focus style. Applied with :focus-visible so mouse users do not see
+ * it, but it is impossible to miss for anyone navigating by keyboard.
+ */
+:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* Honour the OS "reduce motion" setting rather than animating regardless. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/*
+ * Windows High Contrast / forced-colors mode strips author colours. Make sure
+ * borders survive so buttons and inputs remain distinguishable.
+ */
+@media (forced-colors: active) {
+  button,
+  input,
+  select,
+  textarea,
+  .card {
+    border: 1px solid currentColor;
+  }
+}
+
+/* Visually hidden but still announced by screen readers. */
+.sr-only-focusable:not(:focus):not(:active) {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

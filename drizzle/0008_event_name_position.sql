@@ -1,0 +1,3 @@
+ALTER TABLE "events" ALTER COLUMN "recipient_types" SET DEFAULT '[{"id":"recipient","label":"Recipient","awards":[{"name":"First Prize"},{"name":"Second Prize"},{"name":"Third Prize"},{"name":"Special Mention"},{"name":"Certificate of Participation"}]}]'::jsonb;--> statement-breakpoint
+ALTER TABLE "events" ALTER COLUMN "print_wording" SET DEFAULT '{"title":"Certificate","lead":"This certificate is awarded to","fromLine":"[[from {{location}}]]","recognition":"in recognition of their contribution to {{event}} as a {{role}}.","closing":"","signature":"For {{event}}"}'::jsonb;--> statement-breakpoint
+ALTER TABLE "events" ADD COLUMN "event_name_position" text DEFAULT 'header' NOT NULL;

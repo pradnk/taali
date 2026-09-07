@@ -1,0 +1,14 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    // These run directly under Node's type stripping, which needs real file
+    // extensions on relative imports.
+    "allowImportingTsExtensions": true,
+    "noEmit": true
+  },
+  // The app sources they import are pulled in by following those imports, so
+  // they are checked in the context the scripts actually use them.
+  // next-env.d.ts stays for Next's fetch augmentation.
+  "include": ["next-env.d.ts", "scripts/**/*.ts", "scripts/**/*.mts"],
+  "exclude": ["node_modules"]
+}

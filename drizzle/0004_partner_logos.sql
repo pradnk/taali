@@ -1,0 +1,1 @@
+ALTER TABLE "events" ADD COLUMN "partner_logos" jsonb DEFAULT '[]'::jsonb NOT NULL;

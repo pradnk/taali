@@ -1,0 +1,608 @@
+/*
+ * Styles for the printable certificate.
+ *
+ * Written as plain CSS rather than utility classes because these rules have to
+ * behave identically on screen and on paper, and print layout depends on exact
+ * physical units that Tailwind's scale does not express.
+ */
+
+@page {
+  size: A4 landscape;
+  margin: 0;
+}
+
+.certificate-page {
+  /* Exact A4 landscape, so what is previewed is what prints. */
+  width: 297mm;
+  height: 210mm;
+  padding: 12mm;
+  margin: 0 auto;
+  box-sizing: border-box;
+  background: #ffffff;
+  color: #0d1b1a;
+  /* One certificate per sheet, always. */
+  break-after: page;
+  page-break-after: always;
+}
+
+.certificate-page:last-child {
+  break-after: auto;
+  page-break-after: auto;
+}
+
+.certificate-frame {
+  /*
+   * How much the type and the gaps between it are squeezed to keep a sheet on
+   * one page. 1 unless components/print-warnings.tsx measures an overflow and
+   * turns it down; see fitSheets there.
+   *
+   * The QR code, the logos, the border and the frame's own padding are all
+   * fixed millimetres and stay out of it -- a code that shrinks with the text
+   * gets harder to scan, which is a worse problem than the one being solved.
+   */
+  --fit: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  box-sizing: border-box;
+  /* Bottom padding trimmed from 10mm to make room for the partner band below
+     the footer; the band's own margin restores the visual breathing space. */
+  padding: 9mm 12mm 6mm;
+  border: 3mm solid #0b4f4d;
+  border-radius: 4mm;
+}
+
+/*
+ * The logo participates in the header or footer layout rather than being
+ * absolutely positioned in a corner. Absolute placement looked tidier until the
+ * bottom-right case, where it landed squarely on top of the QR code. Laying it
+ * out in the band makes an overlap impossible in any of the four positions.
+ *
+ * Sized by maximums, so a wide wordmark and a square emblem both sit
+ * comfortably and neither is distorted.
+ */
+.certificate-logo {
+  max-width: 42mm;
+  max-height: 18mm;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+/* `order` decides which side of the band the logo takes. */
+.certificate-band-start .certificate-logo {
+  order: -1;
+}
+
+.certificate-band-end .certificate-logo {
+  order: 10;
+}
+
+.certificate-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8mm;
+  border-bottom: 1mm solid #0b4f4d;
+  padding-bottom: 4mm;
+  margin-bottom: 6mm;
+}
+
+/* The partner row is a fixed-size credit in either header, never a flex filler. */
+.certificate-header .certificate-partners,
+.certificate-centred-header .certificate-partners {
+  flex-shrink: 0;
+}
+
+/*
+ * A size down in a header, where the logos are a credit beside the event's name
+ * rather than the band they are at the foot. It also buys back 2mm on a sheet
+ * whose worst case -- a long school name wrapping to two lines, plus
+ * "Certificate of Participation" -- was 1.6mm over.
+ */
+.certificate-header .certificate-partner-logo,
+.certificate-centred-header .certificate-partner-logo {
+  max-height: 10mm;
+}
+
+/*
+ * In a header the caption sits above the row, not beside it, and the logos give
+ * up the height it costs rather than the header growing into a budget that has
+ * none to spare.
+ */
+.certificate-header .certificate-partners,
+.certificate-centred-header .certificate-partners {
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5mm;
+}
+
+.certificate-header .certificate-partners-label,
+.certificate-centred-header .certificate-partners-label {
+  font-size: calc(8pt * var(--fit));
+}
+
+.certificate-heading {
+  /* Takes the remaining width so a long event name wraps rather than
+     squeezing the logo. */
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.certificate-event {
+  margin: 0;
+  font-size: calc(22pt * var(--fit));
+  /* 1.15, not the 1.6 inherited from body copy: this is display type, and at
+     22pt the inherited value added 3mm of empty space above the rule. */
+  line-height: 1.15;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #0b4f4d;
+}
+
+.certificate-org {
+  margin: calc(1mm * var(--fit)) 0 0;
+  font-size: calc(14pt * var(--fit));
+  line-height: 1.3;
+  color: #3f5250;
+}
+
+.certificate-lead {
+  margin: 0;
+  font-size: calc(16pt * var(--fit));
+  line-height: 1.25;
+  color: #3f5250;
+}
+
+.certificate-name {
+  /* The largest thing on the page by a wide margin: at this size it is legible to someone with substantial residual vision holding it at arm's length. */ margin: calc(2mm * var(--fit)) 0 0;
+  font-size: calc(54pt * var(--fit));
+  line-height: 1.1;
+  font-weight: 700;
+  text-wrap: balance;
+}
+
+.certificate-detail {
+  margin: calc(2mm * var(--fit)) 0 0;
+  font-size: calc(16pt * var(--fit));
+  line-height: 1.25;
+  color: #3f5250;
+}
+
+.certificate-award {
+  display: inline-block;
+  align-self: flex-start;
+  margin: calc(4mm * var(--fit)) 0 0;
+  padding: 2mm 5mm;
+  border-radius: 2mm;
+  background: #d6ecea;
+  font-size: calc(26pt * var(--fit));
+  line-height: 1.2;
+  font-weight: 700;
+  color: #06302f;
+}
+
+.certificate-project {
+  margin: calc(3mm * var(--fit)) 0 0;
+  font-size: calc(15pt * var(--fit));
+  line-height: 1.5;
+  max-width: 200mm;
+}
+
+.certificate-footer {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 8mm;
+  margin-top: auto;
+  padding-top: 5mm;
+  border-top: 0.5mm solid #c6d5d3;
+}
+
+.certificate-listen-title {
+  margin: 0;
+  font-size: calc(15pt * var(--fit));
+  line-height: 1.25;
+  font-weight: 700;
+}
+
+.certificate-listen-body {
+  margin: calc(1mm * var(--fit)) 0 0;
+  font-size: calc(12pt * var(--fit));
+  color: #3f5250;
+  max-width: 150mm;
+}
+
+.certificate-qr {
+  width: 32mm;
+  height: 32mm;
+  flex-shrink: 0;
+}
+
+/* Screen preview: show the sheet edges so the operator can see the page. */
+/*
+ * Co-organisers and supporters, at the foot of the sheet.
+ *
+ * The vertical budget here is real: the frame is a fixed 160mm and a typical
+ * certificate already spends ~143mm of it, so this band is costed at ~20mm and
+ * the space is bought back from the frame padding, the footer padding and the
+ * award and project margins above. A taller row would push a long name onto a
+ * second sheet.
+ *
+ * No rule above it. The footer's own border-top sits ~25mm higher and a second
+ * hairline that close reads as clutter rather than as structure.
+ */
+.certificate-partners {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7mm;
+  margin-top: 4mm;
+}
+
+/*
+ * The label sits on the row rather than above it. Stacked, it cost 4.7mm of a
+ * budget that only had 6mm in it, which forced the logos down to 10mm -- small
+ * enough that all three read as specks. Inline, the row is no taller than the
+ * logos themselves and they can be 14mm.
+ */
+.certificate-partners-label {
+  margin: 0;
+  font-size: 9pt;
+  line-height: 1.2;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #3f5250;
+  flex-shrink: 0;
+}
+
+.certificate-partners-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7mm;
+}
+
+/*
+ * One rule for marks of very different shapes. A square logo is capped by the
+ * height, a wide wordmark by the width, so the three end up at roughly equal
+ * optical weight without per-logo tuning -- and adding a fourth needs no CSS.
+ */
+.certificate-partner-logo {
+  max-width: 40mm;
+  max-height: 14mm;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+/* ---------------------------------------------------------------- centred
+ *
+ * The alternative arrangement: a title across the top, the recipient centred
+ * beneath it, and a single row across the foot. Everything here is namespaced
+ * `certificate-centred-*` so that the classic rules above cannot be disturbed
+ * by a change made for this one.
+ *
+ * It carries no exhibit paragraph, which costs about 19mm on the classic sheet
+ * and is the one block whose height nobody can predict -- that is where the
+ * room for the title and the recognition paragraph comes from.
+ */
+/*
+ * Three columns rather than a flex row with space-between: the middle one has
+ * to be centred on the *sheet*, not on whatever the marks leave over, and the
+ * outer two stay equal fractions even when only one of them carries a logo.
+ * `1fr auto 1fr` is what makes that true.
+ */
+.certificate-centred-header {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 8mm;
+  min-height: 12mm;
+  /*
+   * Never squashed. As flex items of an overflowing column these would
+   * otherwise compress to their min-height, quietly swallowing the very
+   * overflow that print-warnings.tsx is measuring for.
+   */
+  flex-shrink: 0;
+}
+
+/*
+ * The organisation's mark and the event's name, kept together as one lockup so
+ * they stay side by side whichever end of the band they sit at.
+ */
+.certificate-centred-brand {
+  display: flex;
+  align-items: center;
+  gap: 6mm;
+  min-width: 0;
+  grid-column: 1;
+}
+
+/* Always the last column, whether or not the middle one is used. */
+.certificate-centred-header .certificate-partners {
+  grid-column: 3;
+  justify-self: end;
+}
+
+/*
+ * Centred, the name is the only thing on the sheet's middle line above the
+ * title, so it carries more weight than it does tucked beside a logo.
+ */
+.certificate-centred-header-centre .certificate-centred-event {
+  grid-column: 2;
+  font-size: calc(24pt * var(--fit));
+  text-align: center;
+  /*
+   * Capped so a long event name wraps onto a second line instead of widening
+   * the middle column until it pushes the marks off their own edges. The header
+   * grows a little in that case, which the sheet can show; an overlap it cannot.
+   */
+  max-width: 130mm;
+  text-wrap: balance;
+}
+
+/*
+ * The same 12mm the supporters get in this band. The base rule allows 18mm,
+ * which outgrows the header; 14mm was tried and cost 2mm of a budget that the
+ * centred sheet needs when the partner band sits at the foot as well. Leading
+ * the header is enough presence on its own.
+ */
+.certificate-centred-header .certificate-logo {
+  max-height: 12mm;
+  max-width: 34mm;
+}
+
+/*
+ * Set in caps with a little tracking, the same family as the CERTIFICATE title
+ * below it -- at 19pt against that 30pt it reads as the line above the title
+ * rather than as a competitor to it. At 15pt and sentence case it was simply
+ * small type in a corner.
+ */
+.certificate-centred-event {
+  margin: 0;
+  font-size: 19pt;
+  line-height: 1.15;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #0b4f4d;
+}
+
+.certificate-centred-title {
+  /*
+   * The bottom margin is not decoration. The body below centres itself in
+   * whatever room is left, so on a full sheet it would otherwise ride up
+   * against the title with no gap at all.
+   */
+  margin: calc(2mm * var(--fit)) 0 calc(5mm * var(--fit));
+  font-size: calc(30pt * var(--fit));
+  line-height: 1.15;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-align: center;
+  color: #0b4f4d;
+}
+
+/*
+ * The body is centred vertically in whatever is left between the title and the
+ * foot, rather than sitting directly under the title. On a sheet with a short
+ * recognition paragraph that keeps the block from stranding halfway up the
+ * page with a lake of white space beneath it.
+ */
+.certificate-centred-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  /*
+   * Grows into spare space but never shrinks. With `1 1 auto` a tall foot
+   * squeezed this block below its own content, which silently drew the name on
+   * top of the title -- where an overflowing sheet must instead run past the
+   * frame, which is what components/print-warnings.tsx measures.
+   */
+  flex: 1 0 auto;
+  text-align: center;
+}
+
+.certificate-centred-lead {
+  margin: 0;
+  font-size: calc(16pt * var(--fit));
+  line-height: 1.25;
+  color: #3f5250;
+}
+
+/*
+ * Smaller than the 54pt of the classic sheet. Centred, the name has the whole
+ * width to itself rather than a corner of it, so it reads just as large -- and
+ * the saving keeps a long name on one line.
+ */
+.certificate-centred-name {
+  margin: calc(2mm * var(--fit)) 0 0;
+  font-size: calc(44pt * var(--fit));
+  line-height: 1.1;
+  font-weight: 700;
+  text-wrap: balance;
+}
+
+.certificate-centred-from {
+  margin: calc(2mm * var(--fit)) 0 0;
+  font-size: calc(17pt * var(--fit));
+  line-height: 1.3;
+  font-weight: 700;
+}
+
+/*
+ * The same chip as the classic sheet, re-centred and a size down. `align-self`
+ * has to be overridden: the classic rule pins it to the start of the column,
+ * which in a centred block would strand it against the left edge. Smaller than
+ * 26pt so that it sits under the 44pt name rather than competing with it.
+ */
+.certificate-centred-award {
+  align-self: center;
+  margin: calc(4mm * var(--fit)) 0 0;
+  font-size: calc(22pt * var(--fit));
+}
+
+/*
+ * A wider measure than the 190mm this started at. The sheet is 243mm across, so
+ * 210mm still leaves a clear margin, and the extra characters per line are what
+ * keeps a long recognition paragraph to two lines instead of three -- worth
+ * about 7mm, which is more than anything else here has to give.
+ */
+.certificate-centred-recognition {
+  margin: calc(4mm * var(--fit)) 0 0;
+  font-size: calc(14pt * var(--fit));
+  line-height: 1.5;
+  max-width: 210mm;
+  text-wrap: balance;
+  color: #3f5250;
+}
+
+.certificate-centred-closing {
+  margin: calc(4mm * var(--fit)) 0 0;
+  font-size: calc(15pt * var(--fit));
+  line-height: 1.4;
+  max-width: 190mm;
+  text-wrap: balance;
+}
+
+.certificate-centred-footer {
+  display: flex;
+  /*
+   * Everything in this row starts on the same line: the sign-off, "This
+   * certificate speaks" and the top of the code. Bottom-aligned, the sign-off
+   * floated above a listen block that began lower down, and the row read as
+   * three things dropped in at three different heights.
+   */
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8mm;
+  margin-top: 3mm;
+  padding-top: 4mm;
+  border-top: 0.5mm solid #c6d5d3;
+  flex-shrink: 0;
+}
+
+/*
+ * The sign-off sits at the top of the row with everything else, so the room the
+ * QR code already reserves below it is left clear to sign in. The code is 32mm
+ * tall and this line about 6mm, so roughly 25mm of signing space comes free --
+ * it costs the sheet nothing.
+ */
+.certificate-centred-signature {
+  margin: 0;
+  font-size: calc(14pt * var(--fit));
+  line-height: 1.3;
+  font-weight: 700;
+  flex: 1 1 auto;
+}
+
+/*
+ * The sign-off and whatever signs it, as one column on the left of the foot.
+ */
+.certificate-centred-signoff {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/*
+ * Signatures sit in the room the 32mm code opposite already takes up, so a
+ * signed sheet is no taller than an unsigned one. The width each gets is set
+ * per count rather than left to the flex box: two signatures spread across the
+ * whole column look like two halves of a letterhead, where a fixed width keeps
+ * them reading as signatures with room to breathe between.
+ */
+.certificate-signatures {
+  display: flex;
+  align-items: flex-end;
+  gap: 8mm;
+  margin: 5mm 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.certificate-signature {
+  max-height: 16mm;
+  max-width: 46mm;
+  object-fit: contain;
+}
+
+/* Three have to share the same column, so each takes a little less of it. */
+.certificate-signatures[data-count='3'] {
+  gap: 5mm;
+}
+
+.certificate-signatures[data-count='3'] .certificate-signature {
+  max-height: 14mm;
+  max-width: 31mm;
+}
+
+/* A single signature is not a row, so it gets the room a pen would have had. */
+.certificate-signatures[data-count='1'] .certificate-signature {
+  max-height: 18mm;
+  max-width: 60mm;
+}
+
+.certificate-centred-listen {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+  gap: 5mm;
+  flex: 0 0 auto;
+}
+
+/* In the header the row is a credit beside the title, not a band under it. */
+.certificate-centred-header .certificate-partners {
+  margin-top: 0;
+}
+
+.certificate-centred-listen .certificate-listen-body {
+  max-width: 78mm;
+}
+
+/*
+ * The partner band, when the centred sheet carries one at its foot.
+ *
+ * That sheet is the tighter of the two: it spends height on a title and a
+ * recognition paragraph that the classic one does not, so the band has to be
+ * more frugal here than the 14mm it gets on a classic sheet with room to spare.
+ */
+/*
+ * The child combinator matters: the foot band is a direct child of the frame
+ * while a header's row is nested inside its <header>. Without it these two
+ * rules also match the header, at equal specificity but later in the file, and
+ * quietly win over the smaller size a header needs.
+ */
+.certificate-frame-centred > .certificate-partners {
+  margin-top: 3mm;
+}
+
+.certificate-frame-centred > .certificate-partners .certificate-partner-logo {
+  max-height: 11mm;
+}
+
+@media screen {
+  .certificate-page {
+    box-shadow: 0 0 0 1px #c6d5d3;
+    margin-bottom: 8mm;
+  }
+}
+
+@media print {
+  .print-hide {
+    display: none !important;
+  }
+
+  .certificate-page {
+    box-shadow: none;
+    margin: 0;
+  }
+
+  /* Keep the teal frame and award chip when printing; browsers strip
+     backgrounds by default and the certificate would print as bare text. */
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}

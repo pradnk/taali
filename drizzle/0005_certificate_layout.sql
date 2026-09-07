@@ -1,0 +1,4 @@
+ALTER TABLE "events" ADD COLUMN "partner_logo_position" text DEFAULT 'bottom-centre' NOT NULL;--> statement-breakpoint
+ALTER TABLE "events" ADD COLUMN "partner_label" text DEFAULT 'Presented by' NOT NULL;--> statement-breakpoint
+ALTER TABLE "events" ADD COLUMN "certificate_layout" text DEFAULT 'classic' NOT NULL;--> statement-breakpoint
+ALTER TABLE "events" ADD COLUMN "print_wording" jsonb DEFAULT '{"title":"Certificate","lead":"This certificate is awarded to","fromLine":"[[from {{location}}]]","recognition":"in recognition of their participation in {{event}}.","closing":"","signature":"For {{event}}"}'::jsonb NOT NULL;

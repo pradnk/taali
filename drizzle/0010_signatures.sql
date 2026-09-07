@@ -1,0 +1,1 @@
+ALTER TABLE "events" ADD COLUMN "signatures" jsonb DEFAULT '[]'::jsonb NOT NULL;

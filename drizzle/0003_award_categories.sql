@@ -1,0 +1,1 @@
+ALTER TABLE "events" ADD COLUMN "awards" jsonb DEFAULT '["First Prize","Second Prize","Third Prize","Special Mention","Certificate of Participation"]'::jsonb NOT NULL;
